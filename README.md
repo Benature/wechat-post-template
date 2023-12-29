@@ -10,6 +10,12 @@
 ## 使用 Usage
 
 ```shell
+# config.py
+Authorization = "xxxxx" # SM.MS API Key
+```
+
+
+```shell
 python main.py "path/to/post.md"
 ```
 
