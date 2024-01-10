@@ -8,7 +8,8 @@ from pathlib import Path
 
 class ImageHost:
 
-    def __init__(self, db_name='image_host.db'):
+    def __init__(self, md_path, db_name='image_host.db'):
+        self.root_path = md_path.parent
         self.db_name = db_name
         self.initialize_database()
         self.header = {
@@ -52,8 +53,8 @@ class ImageHost:
         if existing_entry:
             conn.close()
             return existing_entry[0]  # Return URL from the database
-
-        with open(unquote(fn), 'rb') as f:
+        img_rel_path = Path(unquote(fn))
+        with open(self.root_path / img_rel_path, 'rb') as f:
             files = {'smfile': f}
             res = requests.post("https://sm.ms/api/v2/upload",
                                 headers=self.header,
@@ -63,9 +64,11 @@ class ImageHost:
             # print(res.content)
             resj = res.json()
             if resj['code'] == "image_repeated":
+                print(f"repeated image: {img_rel_path.stem}")
                 url = resj['images']
                 data = dict(url=url)
             else:
+                print(f"uploaded image: {img_rel_path.stem}")
                 data = res.json()['data']
                 data['delete_link'] = data['delete']
                 del data['delete']

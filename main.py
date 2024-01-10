@@ -6,15 +6,15 @@ import sys
 
 from images import ImageHost
 
-PATH_INPUT_MD = sys.argv[1]
-
-PATH_INPUT_MD = Path(PATH_INPUT_MD)
+PATH_INPUT_MD = Path(sys.argv[1])
 
 ROOT_PATH = Path(__file__).parent
 PATH_md_temp = ROOT_PATH / "temp/result.md"
 PATH_html_temp = ROOT_PATH / "temp/result.html"
 PATH_html_result = PATH_INPUT_MD.parent / f"{PATH_INPUT_MD.stem}.html"
 PATH_pandoc = '/opt/homebrew/bin/pandoc'
+
+################################# Markdown process #################################
 
 
 def replace_link(m):
@@ -32,7 +32,7 @@ def replace_image(m):
 
 with open(PATH_INPUT_MD, "r") as f:
     content = f.read()
-image_host = ImageHost()
+image_host = ImageHost(PATH_INPUT_MD)
 
 pattern_link = r"[^!]\[(?P<text>.*?)\]\((?P<url>.*?)\)"
 pattern_image = r"!\[(?P<text>.*?)\]\((?P<url>.*?)\)"
@@ -53,7 +53,7 @@ content = re.sub(pattern_image, replace_image, content)
 
 with open(PATH_md_temp, "w") as f:
     f.write(content)
-Popen([PATH_pandoc, PATH_md_temp, '-o', PATH_html_temp])
+Popen([PATH_pandoc, PATH_md_temp, '-o', PATH_html_temp]).wait()
 
 with open(PATH_html_temp, "r") as f:
     soup = BeautifulSoup(f.read(), "lxml")
@@ -98,3 +98,10 @@ for node in ['h1', 'h2']:
 # 将修改后的 HTML 内容写回文件
 with open(PATH_html_result, 'w', encoding='utf-8') as file:
     file.write(str(soup))
+
+################################# copy process #################################
+
+import richxerox
+
+print("Copying HTML content...")
+richxerox.copy(html=str(soup))

@@ -1,6 +1,9 @@
 # 微信公众号推送模板 Wechat Post Template
 
-微信公众号推送 Markdown 转 HTML (markdown2html)，自定义样式。
+微信公众号推送 Markdown 转 HTML (markdown2html)
+
+- 支持自定义样式，如 `h1`, `img` 等
+- 运行结束后自动复制 HTML 格式到剪贴板
 
 依赖：
 - `pandoc`
